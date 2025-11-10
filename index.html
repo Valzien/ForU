@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buat Azizah 💖</title>
+  <style>
+    body {
+      background-color: #ffd6e0;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      color: #ff4d79;
+      font-size: 2em;
+      animation: float 3s ease-in-out infinite;
+      margin-bottom: 40px;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .card {
+      background: #ffe4ec;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(255, 77, 121, 0.3);
+      padding: 40px;
+      width: 330px;
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .buttons {
+      position: relative;
+      height: 120px;
+      width: 100%;
+    }
+
+    button {
+      font-size: 1.1em;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: absolute;
+    }
+
+    #yesBtn {
+      background-color: #ff4d79;
+      color: white;
+      left: 40px;
+      bottom: 10px;
+      box-shadow: 0 0 10px #ff4d79;
+    }
+
+    #yesBtn:hover {
+      transform: scale(1.1);
+      background-color: #ff668c;
+    }
+
+    #noBtn {
+      background-color: #fff;
+      color: #ff4d79;
+      border: 2px solid #ff4d79;
+      right: 40px;
+      bottom: 10px;
+    }
+
+    .fallingText {
+      position: absolute;
+      top: -50px;
+      color: #ff4d79;
+      font-size: 1.1em;
+      opacity: 0.8;
+      animation: fall linear forwards;
+      z-index: 1;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+
+    .heart {
+      position: absolute;
+      color: #ff4d79;
+      animation: floatUp 4s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-800px) scale(0.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card" id="mainCard">
+    <h1>Azizah, kamu mau jadi pacarku nggak?</h1>
+    <div class="buttons" id="btnArea">
+      <button id="yesBtn">Yes 💖 (Play)</button>
+      <button id="noBtn">No 😝</button>
+    </div>
+  </div>
+
+  <audio id="bgMusic" src="jadianyu.mp3" loop muted></audio>
+
+<script>
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const bgMusic = document.getElementById('bgMusic');
+  let victoryMusic;
+  let musicStarted = false;
+
+  // --- Mulai musik saat interaksi pertama user ---
+  function startMusic() {
+    if (!musicStarted) {
+      musicStarted = true;
+      bgMusic.muted = false;
+      bgMusic.volume = 0;
+      bgMusic.play().then(() => {
+        // fade in biar smooth
+        let vol = 0;
+        const fade = setInterval(() => {
+          if (vol < 1) {
+            vol += 0.05;
+            bgMusic.volume = vol;
+          } else {
+            clearInterval(fade);
+          }
+        }, 200);
+        console.log("Musik jadianyu.mp3 dimulai setelah interaksi user.");
+      }).catch(err => {
+        console.log("Gagal memutar musik:", err);
+      });
+      // lepas event listener supaya gak dobel
+      window.removeEventListener('click', startMusic);
+    }
+  }
+
+  // saat user pertama kali klik di mana pun
+  window.addEventListener('click', startMusic);
+
+  // tombol No kabur
+  noBtn.addEventListener('mouseenter', () => {
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const margin = 30;
+    const maxX = window.innerWidth - btnWidth - margin;
+    const maxY = window.innerHeight - btnHeight - margin;
+    const currentRect = noBtn.getBoundingClientRect();
+    let randomX, randomY;
+    do {
+      randomX = Math.random() * maxX;
+      randomY = Math.random() * maxY;
+    } while (Math.abs(randomX - currentRect.left) < 80 && Math.abs(randomY - currentRect.top) < 80);
+    noBtn.style.position = "fixed";
+    noBtn.style.left = `${randomX}px`;
+    noBtn.style.top = `${randomY}px`;
+    noBtn.style.right = "auto";
+    noBtn.style.bottom = "auto";
+  });
+
+  // tombol Yes = stop musik lama + mainkan yang baru
+  yesBtn.addEventListener('click', async () => {
+    // stop lagu awal
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+
+    // ubah tampilan
+    document.body.innerHTML = `
+      <h1>Yeeey! 💞<br> Nah, gini dong! From now on, I’m yours and you’re mine!</h1>
+    `;
+
+    // efek hati
+    for (let i = 0; i < 30; i++) {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.innerHTML = '💗';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.top = Math.random() * 100 + 'vh';
+      heart.style.fontSize = Math.random() * 20 + 20 + 'px';
+      heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
+    }
+
+    // mainkan lagu kemenangan
+    victoryMusic = new Audio("we_are_the_champions.mp3");
+    try {
+      await victoryMusic.play();
+    } catch (err) {
+      console.log("Autoplay diblokir:", err);
+    }
+  });
+
+  // teks jatuh lucu
+  const texts = [
+    "udah nyerah aja 😆",
+    "sini jadi pacar aku 💞",
+    "please yes 😭",
+    "aku serius nih 😳",
+    "Azizah cantik banget 💘",
+    "kalo nolak nanti nyesel 😝"
+  ];
+
+  function createFallingText() {
+    const text = document.createElement('div');
+    text.classList.add('fallingText');
+    text.textContent = texts[Math.floor(Math.random() * texts.length)];
+    text.style.left = Math.random() * window.innerWidth + 'px';
+    text.style.animationDuration = (Math.random() * 5 + 5) + 's';
+    document.body.appendChild(text);
+    setTimeout(() => text.remove(), 10000);
+  }
+
+  setInterval(createFallingText, 1000);
+</script>
+
+
+</body>
+</html>
